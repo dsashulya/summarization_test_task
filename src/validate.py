@@ -86,26 +86,56 @@ def main() -> NoReturn:
         json.dump(validation_params, file)
 
     # data
+    if validation_params['prompting'] == 'zero-shot':
+        inp_vars = ["text"]
+    elif validation_params['prompting'] == 'one-shot':
+        inp_vars = ["sample_source", "sample_target", "text"]
+    else:
+        inp_vars = ["sample_source0", "sample_target0",
+                    "sample_source1", "sample_target1",
+                    "text"]
+
     prompt = PromptTemplate(
-        input_variables=["text"],
+        input_variables=inp_vars,
         template=prompt_text,
     )
+
+    if validation_params['prompting'] != 'zero-shot':
+        prompt_ds = RedditDataset(data_params['paths']['path_to_data'],
+                              data_params['paths']['train_source'],
+                              data_params['paths']['train_target'],
+                              prompt=None,
+                              preprocess_func=preprocess,
+                              type_='train',
+                              prompting_type='zero-shot')
+        prompt_ds.preprocess(**data_params['preprocess_kwargs'])
+    else:
+        prompt_ds = None
 
     train = RedditDataset(data_params['paths']['path_to_data'],
                           data_params['paths']['train_source'],
                           data_params['paths']['train_target'],
-                          prompt,
-                          preprocess_func=preprocess)
+                          prompt=prompt,
+                          preprocess_func=preprocess,
+                          type_='train',
+                          prompting_type=validation_params['prompting'],
+                          prompt_dataset=prompt_ds)
     val = RedditDataset(data_params['paths']['path_to_data'],
-                          data_params['paths']['val_source'],
-                          data_params['paths']['val_target'],
-                          prompt,
-                          preprocess_func=preprocess)
+                        data_params['paths']['val_source'],
+                        data_params['paths']['val_target'],
+                        prompt=prompt,
+                        preprocess_func=preprocess,
+                        type_='val',
+                        prompting_type=validation_params['prompting'],
+                        prompt_dataset=prompt_ds)
     test = RedditDataset(data_params['paths']['path_to_data'],
-                          data_params['paths']['test_source'],
-                          data_params['paths']['test_target'],
-                          prompt,
-                          preprocess_func=preprocess)
+                        data_params['paths']['test_source'],
+                        data_params['paths']['test_target'],
+                        prompt=prompt,
+                        preprocess_func=preprocess,
+                        type_='test',
+                         prompting_type=validation_params['prompting'],
+                        prompt_dataset=prompt_ds)
 
     train.preprocess(**data_params['preprocess_kwargs'])
     val.preprocess(**data_params['preprocess_kwargs'])

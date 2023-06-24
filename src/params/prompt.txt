@@ -1,1 +1,1 @@
-summarize: {text}
+summarize: {sample_source0}\nsummary: {sample_target0}\nsummarize: {sample_source1}\nsummary: {sample_target1}\nsummarize: {text}\nsummary:\s
