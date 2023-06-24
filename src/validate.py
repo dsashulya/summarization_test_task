@@ -1,5 +1,8 @@
 import json
+import logging
+import os
 
+from datetime import datetime
 from collections import defaultdict
 from typing import NoReturn
 
@@ -20,7 +23,7 @@ from transformers import (
 from data.dataset import RedditDataset, preprocess
 
 
-DEVICE = torch.device(f'cuda:{torch.cuda.get_device_name()}') if torch.cuda.is_available() else torch.device('cpu')
+DEVICE = torch.device(f'cuda:{torch.cuda.current_device()}') if torch.cuda.is_available() else torch.device('cpu')
 MODELS = {
     "LongT5": LongT5ForConditionalGeneration,
 }
@@ -30,6 +33,8 @@ def compute_metrics(dataset: RedditDataset,
                     model: AutoModelForCausalLM,
                     tokenizer: AutoTokenizer,
                     metric,
+                    logdir: str = None,
+                    data_type: str = 'val',
                     summ_kwargs: dict = {}) -> dict:
     output_metrics = defaultdict(float)
     with torch.no_grad():
@@ -43,6 +48,11 @@ def compute_metrics(dataset: RedditDataset,
             preds = tokenizer.batch_decode(preds.cpu(),
                                      skip_special_tokens=True)
             metric.add_batch(predictions=preds, references=summaries)
+
+            if logdir is not None:
+                with open(os.path.join(logdir, f'{data_type}_generated_summaries.txt'), 'a') as file:
+                    for pred in preds:
+                        file.write(pred + '\n')
         return metric.compute()
 
 
@@ -56,7 +66,25 @@ def main() -> NoReturn:
 
     with open('params/validation_params.json', 'r') as validation_params_file:
         validation_params = json.load(validation_params_file)
-    
+
+    # logging
+    os.makedirs(validation_params['log']['logdir'], exist_ok=True)
+    now = datetime.now()
+    if validation_params['log']['folder_name'] is not None:
+        log_dir = os.path.join(validation_params['log']['logdir'],
+                               validation_params['log']['folder_name'])
+    else:
+        log_dir = os.path.join(validation_params['log']['logdir'],
+                               f'{validation_params["model"]["model_name"]}-{now:%Y%m%d-%H%M-%S}')
+    os.makedirs(log_dir, exist_ok=True)
+
+    with open(os.path.join(log_dir, 'prompt.txt'), 'w') as file:
+        file.write(prompt_text)
+    with open(os.path.join(log_dir, 'data_patams.json'), 'w') as file:
+        json.dump(data_params, file)
+    with open(os.path.join(log_dir, 'validation_patams.json'), 'w') as file:
+        json.dump(validation_params, file)
+
     # data
     prompt = PromptTemplate(
         input_variables=["text"],
@@ -103,11 +131,25 @@ def main() -> NoReturn:
     rouge = evaluate.load("rouge")
 
     # validation
-    metrics = compute_metrics(train_dl,
+    metrics_train = compute_metrics(train_dl,
                               model,
                               tokenizer,
                               rouge,
                               summ_kwargs=validation_params["generate"])
+    metrics_val = compute_metrics(val_dl,
+                              model,
+                              tokenizer,
+                              rouge,
+                              logdir=log_dir,
+                              data_type='val',
+                              summ_kwargs=validation_params["generate"])
+
+    with open(os.path.join(log_dir, 'metrics_train.txt'), 'w') as file:
+        for name, value in metrics_train.items():
+            file.write(f'{name}: {str(value)}\n')
+    with open(os.path.join(log_dir, 'metrics_val.txt'), 'w') as file:
+        for name, value in metrics_val.items():
+            file.write(f'{name}: {str(value)}\n')
 
 if __name__ == '__main__':
     main()

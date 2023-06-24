@@ -17,5 +17,10 @@
     "top_k": 0,
     "min_length": 40,
     "max_length": 90
-  }
+  },
+  "log": {
+    "logdir": "/content/logs",
+    "folder_name": null
+  },
+  "prompting": "zero-shot"
 }
