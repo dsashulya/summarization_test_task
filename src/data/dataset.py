@@ -3,6 +3,8 @@ from typing import Callable, List, NoReturn, Tuple
 from langchain.prompts import PromptTemplate
 from torch.utils.data import Dataset
 
+from data.data import read_data
+
 
 class RedditDataset(Dataset):
     def __init__(self,

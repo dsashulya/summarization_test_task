@@ -1,4 +1,5 @@
 import argparse
+import os
 
 from typing import List, NoReturn, Tuple
 
@@ -59,7 +60,7 @@ def main(args) -> NoReturn:
                               X_val,
                               y_train,
                               y_val]):
-        path = os.path.join(path_to_data, fname)
+        path = os.path.join(args.ath_to_data, fname)
         write_data(path, data)
 
 

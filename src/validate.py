@@ -1,6 +1,7 @@
 import json
 
 from collections import defaultdict
+from typing import NoReturn
 
 import evaluate
 import torch
@@ -9,7 +10,12 @@ from accelerate import init_empty_weights, load_checkpoint_and_dispatch
 from langchain.prompts import PromptTemplate
 from torch.utils.data import DataLoader, Dataset
 from tqdm import tqdm
-from transformers import AutoConfig, AutoModelForCausalLM, AutoTokenizer, LongT5ForConditionalGeneration
+from transformers import (
+    AutoConfig,
+    AutoModelForCausalLM,
+    AutoTokenizer,
+    LongT5ForConditionalGeneration
+)
 
 from data.dataset import RedditDataset, preprocess
 
@@ -43,7 +49,7 @@ def compute_metrics(dataset: RedditDataset,
 def main() -> NoReturn:
     # parameters
     with open('params/prompt.txt', 'r') as prompt_file:
-        prompt_text = prompt_file.readlines().strip()
+        prompt_text = prompt_file.readline().strip()
 
     with open('params/data_params.json', 'r') as data_params_file:
         data_params = json.load(data_params_file)
@@ -57,19 +63,19 @@ def main() -> NoReturn:
         template=prompt_text,
     )
 
-    train = RedditDataset(data_params['path_to_data'],
-                          data_params['train_source'],
-                          data_params['train_target'],
+    train = RedditDataset(data_params['paths']['path_to_data'],
+                          data_params['paths']['train_source'],
+                          data_params['paths']['train_target'],
                           prompt,
                           preprocess_func=preprocess)
-    val = RedditDataset(data_params['path_to_data'],
-                          data_params['val_source'],
-                          data_params['val_target'],
+    val = RedditDataset(data_params['paths']['path_to_data'],
+                          data_params['paths']['val_source'],
+                          data_params['paths']['val_target'],
                           prompt,
                           preprocess_func=preprocess)
-    test = RedditDataset(data_params['path_to_data'],
-                          data_params['test_source'],
-                          data_params['test_target'],
+    test = RedditDataset(data_params['paths']['path_to_data'],
+                          data_params['paths']['test_source'],
+                          data_params['paths']['test_target'],
                           prompt,
                           preprocess_func=preprocess)
 
@@ -84,9 +90,9 @@ def main() -> NoReturn:
     # model
     config = AutoConfig.from_pretrained(validation_params['model']['model_path'])
     with init_empty_weights():
-        model = LongT5ForConditionalGeneration(config)
+        model = MODELS[validation_params['model']['model_name']](config)
         model.tie_weights()
-    model = MODELS[validation_params['model']['model_name']].from_pretrained(validation_params['model']['model_path'],
+    model = model.from_pretrained(validation_params['model']['model_path'],
                                                                             device_map='auto',
                                                                             torch_dtype='auto',
                                                                             )
@@ -101,8 +107,7 @@ def main() -> NoReturn:
                               model,
                               tokenizer,
                               rouge,
-                              summ_kwargs=validation_params["generation"],
-                              metric_kwargs={'use_stemmer': True})
+                              summ_kwargs=validation_params["generate"])
 
 if __name__ == '__main__':
     main()

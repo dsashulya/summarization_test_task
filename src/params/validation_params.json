@@ -1,19 +1,21 @@
 {
   "dataloader" : {
     "shuffle": true,
-    "batch_size": 4,
+    "batch_size": 4
   },
   "model": {
     "model_name": "LongT5",
     "model_path": "google/long-t5-tglobal-xl"
   },
   "generate": {
-    "beam_size": 1,
+    "num_beams": 1,
+    "num_beam_groups": 1,
+    "penalty_alpha": 0,
     "do_sample": true,
     "temperature": 1,
     "top_p": 0.5,
     "top_k": 0,
     "min_length": 40,
     "max_length": 90
-  },
+  }
 }
