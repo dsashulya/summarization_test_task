@@ -1,0 +1,15 @@
+{
+  "paths": {
+    "path_to_data": "/content/reddit/vanilla/",
+    "train_source": "train.source",
+    "train_target": "train.target",
+    "val_source": "val.source",
+    "val_target": "val.target",
+    "test_source": "reddit.test.source.remove_markers_simple_separator.txt",
+    "test_target": "reddit.test.target.remove_markers_simple_separator.txt"
+  },
+  "preprocess_kwargs": {
+    "return_title": true,
+    "join_str": "\n"
+  }
+}
