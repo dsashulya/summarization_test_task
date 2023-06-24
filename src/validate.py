@@ -50,9 +50,9 @@ def compute_metrics(dataset: RedditDataset,
             metric.add_batch(predictions=preds, references=summaries)
 
             if logdir is not None:
-                with open(os.path.join(logdir, f'{data_type}_generated_summaries.txt'), 'a') as file:
+                with open(os.path.join(logdir, f'{data_type}_generated_summaries.txt'), 'ab') as file:
                     for pred in preds:
-                        file.write(pred + '\n')
+                        file.write((pred + '\n').encode('utf-8'))
         return metric.compute()
 
 
@@ -80,9 +80,9 @@ def main() -> NoReturn:
 
     with open(os.path.join(log_dir, 'prompt.txt'), 'w') as file:
         file.write(prompt_text)
-    with open(os.path.join(log_dir, 'data_patams.json'), 'w') as file:
+    with open(os.path.join(log_dir, 'data_params.json'), 'w') as file:
         json.dump(data_params, file)
-    with open(os.path.join(log_dir, 'validation_patams.json'), 'w') as file:
+    with open(os.path.join(log_dir, 'validation_params.json'), 'w') as file:
         json.dump(validation_params, file)
 
     # data
