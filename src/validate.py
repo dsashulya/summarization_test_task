@@ -109,7 +109,7 @@ def main() -> NoReturn:
         template=prompt_text,
     )
 
-    preprocess_func = preprocess if data_params['path_to_data'].split('/')[-1] == 'vanilla' else preprocess_arg_filtered
+    preprocess_func = preprocess if data_params['paths']['path_to_data'].split('/')[-1] == 'vanilla' else preprocess_arg_filtered
     if validation_params['prompting'] != 'zero-shot':
         prompt_ds = RedditDataset(data_params['paths']['path_to_data'],
                                   data_params['paths']['train_source'],
