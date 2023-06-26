@@ -35,8 +35,7 @@ python preprocess.py --path_to_data <path to reddit vanilla>
 
 
 ### 4. Метрики
-В качестве колличественной метрики был взят ROUGE1/2/L, так как, во-первых, ..., и во-вторых, она использовалась в статье ConvoSumm, что позволит сравнить результаты.
-
+В качестве колличественной метрики был взят ROUGE1/2/L, так как это самая распространенная метрика для оценки суммаризаций, которая также использовалась и в статье ConvoSumm.
 
 ### 5. Эксперименты
 Все регулируемые в экспериментах гиперпараметры находятся в файлах [data_params.json](https://github.com/dsashulya/summarization_test_task/blob/main/src/params/data_params.json), [validation_params.json](https://github.com/dsashulya/summarization_test_task/blob/main/src/params/validation_params.json) и [prompt.txt](https://github.com/dsashulya/summarization_test_task/blob/main/src/params/prompt.txt).
