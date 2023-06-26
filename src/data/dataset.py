@@ -44,7 +44,7 @@ class RedditDataset(Dataset):
 
         elif self.prompting_type == 'one-shot':
             sample_idx = random.choice(list(range(len(self.source))))
-            if self.type_ == 'train': # avoid sampling the same example
+            if self.type_ == 'train':  # avoid sampling the same example
                 while sample_idx == idx:
                     sample_idx = random.choice(list(range(len(self.source))))
             sample_source, sample_target = self.prompt_dataset[sample_idx]
@@ -54,7 +54,7 @@ class RedditDataset(Dataset):
 
         else:  # two shot
             sample_idx = random.sample(list(range(len(self.source))), 2)
-            if self.type_ == 'train': # avoid sampling the same example
+            if self.type_ == 'train':  # avoid sampling the same example
                 while idx in sample_idx:
                     sample_idx = random.sample(list(range(len(self.source))), 2)
             sample_source0, sample_target0 = self.prompt_dataset[sample_idx[0]]
@@ -75,10 +75,31 @@ def preprocess(text: str,
     title = text.strip().split('   ')[0]
     raw_text = ' '.join(text.split('   ')[2:])
     raw_text = [lines.strip(' \n') for lines in raw_text.split('</s>')]
-    output = [f'{lines}' for i, lines in enumerate(raw_text[1:], 1)]
+    output = [f'Commenter {i}: {lines}' for i, lines in enumerate(raw_text[1:], 1)]
     if return_title:
         title = title.split(': ')[1]
         output = [f'Original poster: {title} {raw_text[0]}'] + output
     else:
         output = [f'Original poster: {raw_text[0]}'] + output
+    return join_str.join(output)
+
+
+def preprocess_arg_filtered(text: str,
+                            return_title: bool = False,
+                            join_str: str = '\n') -> str:
+    title = ''
+    start = 0
+    for i, word in enumerate(text.split(' ')):
+        if word == 'Subreddit:':
+            break
+        if word != 'Title:':
+            title += word + ' '
+        start = i
+    raw_text = ' '.join(text.split(' ')[start + 3:])
+    raw_text = [lines.strip(' \n') for lines in raw_text.split('</s>')]
+    output = [f'Commenter {i}: {lines}' for i, lines in enumerate(raw_text[1:], 1)]
+    if return_title:
+        output = [f'{title} {raw_text[0]}'] + output
+    else:
+        output = [f'{raw_text[0]}'] + output
     return join_str.join(output)

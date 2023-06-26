@@ -1,14 +1,14 @@
 {
   "dataloader" : {
-    "shuffle": true,
-    "batch_size": 2
+    "shuffle": false,
+    "batch_size": 4
   },
   "model": {
     "model_name": "LongT5",
-    "model_path": "google/long-t5-tglobal-xl"
+    "model_path": "pszemraj/long-t5-tglobal-xl-16384-book-summary"
   },
   "generate": {
-    "num_beams": 1,
+    "num_beams": 3,
     "num_beam_groups": 1,
     "penalty_alpha": 0,
     "do_sample": false,
@@ -20,7 +20,8 @@
   },
   "log": {
     "logdir": "/content/drive/MyDrive/summarization/logs",
-    "folder_name": "LongT5_greedy_two-shot"
+    "folder_name": "LongT5_booksum_vanilla_commenter"
   },
-  "prompting": "two-shot"
+  "prompting": "zero-shot",
+  "iterations": 1
 }

@@ -17,6 +17,7 @@ def read_data(path_to_data: str, fname: str) -> List[str]:
                     data.append(line)
     return data
 
+
 def write_data(path: str, data: List[str]) -> NoReturn:
     with open(path, 'w') as file:
         for line in data:

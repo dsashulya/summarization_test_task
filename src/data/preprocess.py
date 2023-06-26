@@ -32,16 +32,17 @@ def train_val_split(source: List[str],
                     target: List[str],
                     reference_val_target: List[str]
                     ) -> Tuple[List[str],
-                               List[str],
-                             List[str],
-                             List[str]]:
+                                List[str],
+                                List[str],
+                                List[str]
+                            ]:
     reference_target_set = set(reference_val_target)
     val_idx = [i for i, item in enumerate(target) if item in reference_target_set]
     train_idx = [i for i in range(len(source)) if i not in set(val_idx)]
     return [source[i] for i in train_idx], \
-            [source[i] for i in val_idx], \
-            [target[i] for i in train_idx], \
-            [target[i] for i in val_idx]
+        [source[i] for i in val_idx], \
+        [target[i] for i in train_idx], \
+        [target[i] for i in val_idx]
 
 
 def main(args) -> NoReturn:
@@ -56,10 +57,10 @@ def main(args) -> NoReturn:
                             'val.source',
                             'train.target',
                             'val.target'],
-                             [X_train,
-                              X_val,
-                              y_train,
-                              y_val]):
+                           [X_train,
+                            X_val,
+                            y_train,
+                            y_val]):
         path = os.path.join(args.path_to_data, fname)
         write_data(path, data)
 
