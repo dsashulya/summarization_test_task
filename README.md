@@ -74,8 +74,42 @@ python validate.py
 [pszemraj/long-t5-tglobal-xl-16384-book-summary](https://huggingface.co/pszemraj/long-t5-tglobal-xl-16384-book-summary) | arg-filtered |                                                 ```summarize: {text}```                                                  |     -     |     3     |      -      |  25.10  |  3.98   | 15.04
 [pszemraj/long-t5-tglobal-xl-16384-book-summary](https://huggingface.co/pszemraj/long-t5-tglobal-xl-16384-book-summary) | arg-filtered |                                                 ```summarize: {text}```                                                  |     +     |     3     |      -      |  25.38  |  3.81   | 15.34
 [pszemraj/long-t5-tglobal-xl-16384-book-summary](https://huggingface.co/pszemraj/long-t5-tglobal-xl-16384-book-summary) |   vanilla    |                                                 ```summarize: {text}```                                                  |     +     |     3     |      +      |  27.67  |  5.26   | 16.40
-[pszemraj/long-t5-tglobal-xl-16384-book-summary](https://huggingface.co/pszemraj/long-t5-tglobal-xl-16384-book-summary) |   vanilla    |                                                 ```summarize: {text}```                                                  |     +     |     3     |    + 120    |  27.82  |  5.44   | 15.86
-[pszemraj/long-t5-tglobal-xl-16384-book-summary](https://huggingface.co/pszemraj/long-t5-tglobal-xl-16384-book-summary) |   vanilla    |                                                 ```summarize: {text}```                                                  |     +     |     3     |  + 180/90   |  24.55  |  3.53   | 14.55
 
-#### Примеры суммаризаций
-Для booksum модели в ```arg-filtered`` не хватало данных о комментаторе.
+
+Так как некоторые тексты обрезались на неоконченных предложениях, дополнительно мне было интересно узнать результат для суммаризаций большей длины, а также суммаризации в две итерации (сначала в текст длины 180, затем из него в текст длины 90). Остальные параметры зафиксированы как в выделенной выше модели:
+Ground Truth:
+```
+Commenters offer suggestions for a potential build. The Oos Crit Dagger Ranger Build was a suggestion that did not vary much from the original commenter's build. Incinerator is a build that several commenters agreed is good, and another interesting build is the Ele wander witch, which several commenters are interested in.
+```
+
+
+Длина 90:
+```
+The original poster asks for a good, not too expensive, map build. He's been playing with a dude who's level 68 and hasn't been able to do any of the maps he's tried. He wants to try something new, but he doesn't know what to build. The commenters give him a bunch of good advice. The first commenter recommends
+```
+
+Длина 120:
+```
+The original poster asks for a good, not too expensive, map build. He's been playing with a dude who's level 68 and hasn't been able to do any of the maps he's tried. He wants to try something new, but he doesn't know what to build. The commenters give him a bunch of good advice. The first commenter recommends a crit dagger ranger build, which is pretty much the same as the one the original poster was using before. The second commenter
+```
+
+Все равно не хватает длины. Однако если применить две итерации, то ... :
+```
+This is a really good example of how you can take a question posted on a forum and turn it into an actual answer. Someone asks for map advice and the narrator gives us a long, detailed answer that basically amounts to "Google it."
+```
+
+Максимальная длина суммаризации | ROUGE-1 | ROUGE-2 | ROUGE-L 
+:---:|:-------:|:-------:|:---------:
+120 |  27.82  |  5.44   | 15.86
+две итерации 180/90 |  24.55  |  3.53   | 14.55
+
+#### Разбор и примеры суммаризаций
+
+Для booksum модели в ```arg-filtered``` не хватало данных о комментаторе и результаты выходили от первого лица:
+```
+I'm new to the game, and I can't seem to find out what the maximum level you can get as a character in the game is. I just hit level 50 and am wondering if there's going to be a cap on how high you can go in the future.
+```
+
+```
+The original poster asks what the max level is in the game right now. No one can give him an answer. He asks if they're planning on raising the level cap in the future. Nope. They're not.
+```
