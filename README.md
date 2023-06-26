@@ -1,7 +1,7 @@
 # Суммаризация диалогов
 
 ### 0. requirements.txt
-Все необходимые библиотеки и их версии лежат в [requirements.txt]():
+Все необходимые библиотеки и их версии лежат в [requirements.txt](https://github.com/dsashulya/summarization_test_task/blob/main/requirements.txt):
 
 ```
 pip install -r requirements.txt
